@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartes Hors Ligne - Navigation GPS & Cartographie Autonome</title>
+    <style>
+        :root {
+            --primary: #1A73E8;
+            --primary-dark: #1558B0;
+            --primary-light: #E8F0FE;
+            --green: #1E8E3E;
+            --green-light: #E6F4EA;
+            --surface: #FFFFFF;
+            --background: #F8F9FA;
+            --text-main: #202124;
+            --text-secondary: #5F6368;
+            --border: #E0E0E0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .btn-download-nav {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-download-nav:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        @media (max-width: 800px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        .badge-offline {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: var(--green-light);
+            color: var(--green);
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            line-height: 1.2;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            font-weight: 800;
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .hero-actions {
+                justify-content: center;
+            }
+        }
+
+        .btn-cta-primary {
+            background-color: var(--primary);
+            color: white;
+            padding: 16px 28px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.35);
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-cta-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(26, 115, 232, 0.45);
+        }
+
+        .btn-cta-secondary {
+            background-color: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 16px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-cta-secondary:hover {
+            background-color: #f1f3f4;
+        }
+
+        /* Mockup Phone Card */
+        .phone-mockup {
+            background: var(--surface);
+            border: 8px solid #202124;
+            border-radius: 36px;
+            padding: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+            position: relative;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .screen-preview {
+            background: #E8ECEF;
+            border-radius: 24px;
+            height: 480px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .mock-topbar {
+            background: white;
+            margin: 12px;
+            border-radius: 20px;
+            padding: 10px 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .mock-route {
+            background: #0F9D58;
+            color: white;
+            margin: 0 12px;
+            border-radius: 14px;
+            padding: 10px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .mock-map {
+            flex: 1;
+            background: #d4e6f1 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M0 20 H100 M20 0 V100 M60 0 V100 M0 70 H100" stroke="%23ffffff" stroke-width="4"/><path d="M10 90 Q 50 40 90 20" stroke="%231A73E8" stroke-width="6" fill="none"/></svg>') repeat;
+            position: relative;
+        }
+
+        .mock-gps-dot {
+            width: 16px;
+            height: 16px;
+            background: #1A73E8;
+            border: 3px solid white;
+            border-radius: 50%;
+            position: absolute;
+            top: 55%;
+            left: 45%;
+            box-shadow: 0 0 0 6px rgba(26, 115, 232, 0.3);
+        }
+
+        /* Features Section */
+        .features {
+            max-width: 1100px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title h2 {
+            font-size: 32px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .section-title p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .grid-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            padding: 26px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Installation Guide */
+        .installation {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 60px 20px;
+        }
+
+        .installation-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-top: 36px;
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .step-item h4 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .step-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        footer {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="nav-container">
+            <a href="#" class="brand">
+                <div class="brand-icon">🗺️</div>
+                <span>Cartes Hors Ligne</span>
+            </a>
+            <a href="Cartes_Hors_Ligne.apk" download="Cartes_Hors_Ligne.apk" class="btn-download-nav">
+                ⬇️ Télécharger l'APK
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main>
+        <section class="hero">
+            <div>
+                <div class="badge-offline">
+                    <span>🟢 100% Autonome & Sans Connexion</span>
+                </div>
+                <h1>Votre navigation GPS <span>partout</span>, même sans Internet</h1>
+                <p>
+                    Retrouvez l'ergonomie intuitive de Google Maps avec un moteur d'itinéraires et une recherche locale totalement intégrés dans votre téléphone. Aucune donnée cellulaire requise.
+                </p>
+                <div class="hero-actions" id="download">
+                    <a href="Cartes_Hors_Ligne.apk" download="Cartes_Hors_Ligne.apk" class="btn-cta-primary">
+                        <span>📥 Télécharger l'APK Android (23 Mo)</span>
+                    </a>
+                    <a href="#guide" class="btn-cta-secondary">
+                        <span>📖 Guide d'installation</span>
+                    </a>
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary);">
+                    Format : <strong>Fichier APK Android natif</strong> • Compatible Android 8.0+
+                </div>
+            </div>
+
+            <!-- Phone Preview Mockup -->
+            <div class="phone-mockup">
+                <div class="screen-preview">
+                    <div class="mock-topbar">
+                        <span>🔍 Rechercher ici (hors ligne)...</span>
+                    </div>
+                    <div class="mock-route">
+                        <span>⬆️ Dans 150m, tourner à droite</span>
+                        <div style="font-size: 9px; opacity: 0.9; margin-top: 2px;">Route Principale • 14 min (8.2 km)</div>
+                    </div>
+                    <div class="mock-map">
+                        <div class="mock-gps-dot"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Grid -->
+        <section class="features">
+            <div class="section-title">
+                <h2>Fonctionnalités Clés</h2>
+                <p>Une suite complète d'outils cartographiques pour vos déplacements en toute autonomie</p>
+            </div>
+
+            <div class="grid-features">
+                <div class="feature-card">
+                    <div class="feature-icon">🧭</div>
+                    <h3>Navigation 100% Hors Ligne</h3>
+                    <p>Calcul d'itinéraires guidés pas à pas avec temps estimé, distance, et alertes de virage sans aucun serveur externe.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Recherche Intelligente Instantanée</h3>
+                    <p>Moteur de recherche embarqué pour trouver villes, rues, stations, hôpitaux et points d'intérêt même au cœur du désert.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🧩</div>
+                    <h3>Boussole Magnétique Active</h3>
+                    <p>Orientation en temps réel avec synchronisation automatique du cap de la carte selon l'orientation de votre smartphone.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <h3>Favoris & Repères Personnalisés</h3>
+                    <p>Sauvegardez vos lieux importants, ajoutez des annotations et classez-les facilement avec stockage sécurisé en base locale Room.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🗺️</div>
+                    <h3>Multi-Vues Cartographiques</h3>
+                    <p>Basculez d'un clic entre la vue Plan vectorielle, la vue Satellite et le relief topographique avec mise en cache locale.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔋</div>
+                    <h3>Mode Éco-Énergie</h3>
+                    <p>Optimisation avancée des cycles de rafraîchissement GPS pour préserver votre batterie lors de longues expéditions.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step by Step Installation Guide -->
+        <section class="installation" id="guide">
+            <div class="installation-container">
+                <div class="section-title">
+                    <h2>Guide d'Installation Simple</h2>
+                    <p>Comment installer l'application sur votre smartphone Android en 3 étapes</p>
+                </div>
+
+                <div class="steps">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <h4>Télécharger l'APK</h4>
+                        <p>Appuyez sur le bouton <strong>"Télécharger l'APK"</strong> ou exportez le fichier depuis le menu AI Studio.</p>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <h4>Autoriser l'installation</h4>
+                        <p>Si Android le demande, autorisez <em>"L'installation depuis cette source"</em> dans vos paramètres de sécurité.</p>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <h4>Ouvrir & Profiter</h4>
+                        <p>Appuyez sur <strong>Installer</strong>. L'application est prête à naviguer partout dans le monde !</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Cartes Hors Ligne • Développé avec Kotlin & Jetpack Compose</p>
+    </footer>
+
+    <script>
+        function triggerDownload() {
+            alert("Pour installer directement l'APK sur votre smartphone :\n\n1. Cliquez sur le menu déroulant en haut à droite d'AI Studio.\n2. Sélectionnez 'Export APK' (ou 'Download APK').\n3. Ouvrez le fichier téléchargé sur votre téléphone Android.");
+        }
+    </script>
+</body>
+</html>

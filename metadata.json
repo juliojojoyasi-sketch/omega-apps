@@ -1,0 +1,6 @@
+{
+  "name": "Cartes",
+  "description": "Application de cartographie et navigation GPS hors ligne inspirée de Google Maps, avec recherche et calcul d'itinéraires autonomes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
